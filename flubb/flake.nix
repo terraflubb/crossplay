@@ -42,6 +42,7 @@
                 uv
                 git
                 openssh
+                perl # scripts_local/lib-sim.sh calls shasum, which ships with perl
 
                 # Runtime libraries used by PlatformIO's downloaded ESP32 toolchain binaries.
                 stdenv.cc.cc.lib
