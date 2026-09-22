@@ -40,6 +40,8 @@
               pkgs: with pkgs; [
                 python3
                 uv
+                git
+                openssh
 
                 # Runtime libraries used by PlatformIO's downloaded ESP32 toolchain binaries.
                 stdenv.cc.cc.lib
@@ -52,6 +54,33 @@
                 sdl3
                 openssl
                 openssl.dev
+
+                # Bug number five: the simulator ran, logged normally, and no
+                # window ever appeared. Two separate causes, both silent.
+                #
+                # (a) SDL3 dlopens its video backends at runtime, and none were
+                # present here, so SDL had no usable video device at all.
+                # wayland is for the session, X11 for the XWayland fallback.
+                #
+                # (b) libGL is libglvnd, a dispatch layer with no driver behind
+                # it. Without mesa there is no GL vendor, so SDL_CreateRenderer
+                # with SDL_RENDERER_ACCELERATED returns NULL. HalDisplay::begin()
+                # does not check it, so every later present is a silent no-op --
+                # and on Wayland a surface is only mapped once a buffer is
+                # committed, so the window never becomes visible and nothing is
+                # logged.
+                wayland
+                libxkbcommon
+                libdecor
+                libGL
+                mesa
+                libx11
+                libxext
+                libxcursor
+                libxi
+                libxrandr
+                libxfixes
+                libxscrnsaver
 
                 # Bug numbers one and two: "can't find sdl2-config" (and later "can't find SDL.h")
                 # The robot helped me with the hacks related to getting SDL2 to play
