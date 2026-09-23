@@ -24,6 +24,7 @@
 #include "go/GoActivity.h"
 #include "hackernews/HackerNewsActivity.h"
 #include "hearts/HeartsActivity.h"
+#include "inkforged/InkForgedActivity.h"
 #include "insider/InsiderActivity.h"
 #include "instapaper/InstapaperActivity.h"
 #include "jaipur/JaipurActivity.h"
@@ -87,6 +88,9 @@ constexpr shelf::Item kApps[] = {
     // Card #516. The icon is the Lucide list mark borrowed from Murdle while
     // the screens are being chosen; a Notes mark comes with the real app.
     {"NOTES", &icon_murdle_face_clues_32, &NotesActivity::create},
+    // The icon is Murdle's hammer, borrowed while the app is one screen and a
+    // name; a forge mark comes with the real thing.
+    {"INKFORGED", &icon_murdle_weapons_32, &InkForgedActivity::create},
 };
 
 // The two rows Home grows, in reading order. Titles are Title Case because
