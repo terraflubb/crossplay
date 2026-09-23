@@ -18,8 +18,15 @@ namespace fui = freeink::ui;
 // screens sharing the 300-352 block.
 enum : fui::ActionId {
   ActionLeaveInkForged = 360,
+  ActionGoHome = 361,
+  ActionGoMoves = 362,
+  ActionGoAssetCards = 363,
 };
 
-void buildInkForged(toybox::Screen& screen);
+// One builder per view. Each knows which view it is, so it can offer the other
+// two and the activity's View enum stays private to the activity.
+void buildHome(toybox::Screen& screen);
+void buildMoves(toybox::Screen& screen);
+void buildAssetCards(toybox::Screen& screen);
 
 }  // namespace inkforgedui

@@ -7,6 +7,7 @@
 // in InkForgedScreens (freestanding). What is left here is the render lock,
 // the tap route and the way out.
 
+#include <cstdint>
 #include <memory>
 
 #include "../../activities/Activity.h"
@@ -26,6 +27,19 @@ class InkForgedActivity final : public Activity {
   void render(RenderLock&&) override;
 
  private:
+  enum class View : uint8_t {
+    Home,
+    Moves,
+    AssetCards,
+  };
+
+  // Where the app is. Nothing saved, nothing about what the app holds.
+  struct UiState {
+    View view = View::Home;
+  };
+
+  UiState ui;
+
   toybox::Interactions interactions;
   // Taps are routed only against a frame that has actually been built, so the
   // first pass cannot dispatch against an empty table.

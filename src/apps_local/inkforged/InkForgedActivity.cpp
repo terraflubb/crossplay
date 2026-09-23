@@ -40,8 +40,24 @@ void InkForgedActivity::loop() {
   if (!input.touchReleased || !interactionsReady) return;
 
   const fui::ActionEvent event = interactions.route(input);
-  if (event.action == inkforgedui::ActionLeaveInkForged) {
-    shelf::leave(renderer, mappedInput);
+  switch (event.action) {
+    case inkforgedui::ActionLeaveInkForged:
+      shelf::leave(renderer, mappedInput);
+      break;
+    case inkforgedui::ActionGoHome:
+      ui.view = View::Home;
+      requestUpdate();
+      break;
+    case inkforgedui::ActionGoMoves:
+      ui.view = View::Moves;
+      requestUpdate();
+      break;
+    case inkforgedui::ActionGoAssetCards:
+      ui.view = View::AssetCards;
+      requestUpdate();
+      break;
+    default:
+      break;
   }
 }
 
@@ -56,7 +72,17 @@ void InkForgedActivity::render(RenderLock&&) {
   toybox::Frame frame(target, device, noInput, interactions);
   toybox::Screen screen(frame);
 
-  inkforgedui::buildInkForged(screen);
+  switch (ui.view) {
+    case View::Home:
+      inkforgedui::buildHome(screen);
+      break;
+    case View::Moves:
+      inkforgedui::buildMoves(screen);
+      break;
+    case View::AssetCards:
+      inkforgedui::buildAssetCards(screen);
+      break;
+  }
 
   interactionsReady = true;
   toybox::reportOverflow(interactions, "InkForged");
