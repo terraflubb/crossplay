@@ -3,7 +3,7 @@
 #include <Memory.h>
 
 #include "../Shelf.h"
-#include "../ui/Toybox.h"
+#include "../ui/Toybox.h" // IWYU pragma: export
 #include "../ui/ToyboxFonts.h"
 #include "../ui/ToyboxTheme.h"
 #include "InkForgedScreens.h"
@@ -40,28 +40,21 @@ void InkForgedActivity::loop() {
   if (!input.touchReleased || !interactionsReady) return;
 
   const fui::ActionEvent event = interactions.route(input);
-  switch (event.action) {
-    case inkforgedui::ActionLeaveInkForged:
-      shelf::leave(renderer, mappedInput);
-      break;
-    case inkforgedui::ActionGoView:
-      // One action for the whole navigation row; the cell tapped arrives as the
-      // value. NavTab is the screens' public order, View is this activity's.
-      switch (static_cast<inkforgedui::NavTab>(event.value)) {
-        case inkforgedui::NavTab::Home:
-          ui.view = View::Home;
-          break;
-        case inkforgedui::NavTab::Moves:
-          ui.view = View::Moves;
-          break;
-        case inkforgedui::NavTab::AssetCards:
-          ui.view = View::AssetCards;
-          break;
-      }
-      requestUpdate();
-      break;
-    default:
-      break;
+  if (event.action == inkforgedui::ActionGoView) {
+    // One action for the whole navigation row; the cell tapped arrives as the
+    // value. NavTab is the screens' public order, View is this activity's.
+    switch (static_cast<inkforgedui::NavTab>(event.value)) {
+      case inkforgedui::NavTab::Home:
+        ui.view = View::Home;
+        break;
+      case inkforgedui::NavTab::Moves:
+        ui.view = View::Moves;
+        break;
+      case inkforgedui::NavTab::AssetCards:
+        ui.view = View::AssetCards;
+        break;
+    }
+    requestUpdate();
   }
 }
 

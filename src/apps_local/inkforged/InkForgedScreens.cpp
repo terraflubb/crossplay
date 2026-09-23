@@ -26,9 +26,16 @@ fui::BitmapRef navIcon(const NavTab tab) {
   return {};
 }
 
-// The navigation row. The selected cell is the component's default treatment:
-// a black pill with the icon knocked out white. tabBar skips frame.hit() for a
-// disabled cell, so the empty slots draw nothing and cannot be tapped.
+// The navigation row, and the only chrome along the bottom. Called first in
+// every builder so nothing above can grow into it.
+//
+// There is no drawn way out: on this device Back is the left-edge swipe and it
+// is the only exit from any app (docs/shelf.md). A drawn exit belongs to a
+// mode, whose exit would otherwise be invisible, not to an app's top level.
+//
+// The selected cell is the component's default treatment: a black pill with the
+// icon knocked out white. tabBar skips frame.hit() for a disabled cell, so the
+// empty slots draw nothing and cannot be tapped.
 void navBar(toybox::Screen& screen, const NavTab active) {
   static constexpr NavTab kViews[kNavViews] = {NavTab::Home, NavTab::Moves, NavTab::AssetCards};
 
@@ -64,40 +71,23 @@ void toyboxChrome(toybox::Screen& screen, const char* title) {
   screen.insetContent(fui::Insets{toybox::kGutter * 3, toybox::kMargin, toybox::kMargin, toybox::kMargin});
 }
 
-void pill(toybox::Screen& screen, const char* label, const fui::ActionId action) {
-  fui::ButtonProps props;
-  props.label = label;
-  props.action = action;
-  screen.button(props, screen.takeBottom(toybox::kPillHeight, toybox::kGutter));
-}
-
-// Chrome along the bottom, called first in every builder so nothing above can
-// grow into it. Laid out bottom-up: the navigation row sits lowest, the way out
-// above it.
-void footer(toybox::Screen& screen, const NavTab active) {
-  navBar(screen, active);
-  // Back is a swipe on this hardware and the pill is the visible affordance for
-  // it; both land on the same shelf::leave().
-  pill(screen, "BACK", ActionLeaveInkForged);
-}
-
 }  // namespace
 
 void buildHome(toybox::Screen& screen) {
   toyboxChrome(screen, "INKFORGED");
-  footer(screen, NavTab::Home);
+  navBar(screen, NavTab::Home);
 
   // screen.body() is the first row this app owns. Nothing draws in it yet.
 }
 
 void buildMoves(toybox::Screen& screen) {
   toyboxChrome(screen, "MOVES");
-  footer(screen, NavTab::Moves);
+  navBar(screen, NavTab::Moves);
 }
 
 void buildAssetCards(toybox::Screen& screen) {
   toyboxChrome(screen, "ASSET CARDS");
-  footer(screen, NavTab::AssetCards);
+  navBar(screen, NavTab::AssetCards);
 }
 
 }  // namespace inkforgedui

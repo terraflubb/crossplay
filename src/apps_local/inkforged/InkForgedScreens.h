@@ -19,8 +19,7 @@ namespace fui = freeink::ui;
 // real constraint is a shared builder composed into the same frame, which today
 // means linkui's reserved 200s.
 enum : fui::ActionId {
-  ActionLeaveInkForged = 360,
-  ActionGoView = 361,  // value carries the NavTab
+  ActionGoView = 360,  // value carries the NavTab
 };
 
 // The bottom navigation row, left to right, and the value ActionGoView carries.
