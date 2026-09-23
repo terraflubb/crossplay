@@ -1,3 +1,11 @@
+## Environment
+
+If you somehow have nix without flakes
+
+```
+nix develop --extra-experimental-features flakes ./flubb
+```
+
 
 ## Running it in the simulator
 
