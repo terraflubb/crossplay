@@ -1,6 +1,6 @@
 Extra rules for this project:
 
-* Please finish each reply with a nautical themed emoji.
+* Please finish each reply with up to 3 emoji with an ocean / sea theme, which roughly summarize the reply you just provided. It can be creative.
 
 * I am using this project to develop apps and games for the Xteink X4 Pro by taking advantage of this fork of the Crosspoint Reader, because it is set up for extra apps in a solid project.
 
