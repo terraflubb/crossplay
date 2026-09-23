@@ -14,17 +14,26 @@ namespace inkforgedui {
 
 namespace fui = freeink::ui;
 
-// Clear of chess (1-21), the shelf (100s), the link screens (200s) and the
-// screens sharing the 300-352 block.
+// Action ids only have to be unique within one painted frame. They are not a
+// firmware-wide registry -- several apps reuse the same small numbers. The one
+// real constraint is a shared builder composed into the same frame, which today
+// means linkui's reserved 200s.
 enum : fui::ActionId {
   ActionLeaveInkForged = 360,
-  ActionGoHome = 361,
-  ActionGoMoves = 362,
-  ActionGoAssetCards = 363,
+  ActionGoView = 361,  // value carries the NavTab
 };
 
-// One builder per view. Each knows which view it is, so it can offer the other
-// two and the activity's View enum stays private to the activity.
+// The bottom navigation row, left to right, and the value ActionGoView carries.
+// The activity's View enum stays private to the activity; this is the wire
+// between them.
+enum class NavTab : int16_t {
+  Home = 0,
+  Moves,
+  AssetCards,
+};
+
+// One builder per view. Each knows which view it is, so it can mark its own
+// navigation cell as the selected one.
 void buildHome(toybox::Screen& screen);
 void buildMoves(toybox::Screen& screen);
 void buildAssetCards(toybox::Screen& screen);

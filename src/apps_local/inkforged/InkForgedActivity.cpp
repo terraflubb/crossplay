@@ -44,16 +44,20 @@ void InkForgedActivity::loop() {
     case inkforgedui::ActionLeaveInkForged:
       shelf::leave(renderer, mappedInput);
       break;
-    case inkforgedui::ActionGoHome:
-      ui.view = View::Home;
-      requestUpdate();
-      break;
-    case inkforgedui::ActionGoMoves:
-      ui.view = View::Moves;
-      requestUpdate();
-      break;
-    case inkforgedui::ActionGoAssetCards:
-      ui.view = View::AssetCards;
+    case inkforgedui::ActionGoView:
+      // One action for the whole navigation row; the cell tapped arrives as the
+      // value. NavTab is the screens' public order, View is this activity's.
+      switch (static_cast<inkforgedui::NavTab>(event.value)) {
+        case inkforgedui::NavTab::Home:
+          ui.view = View::Home;
+          break;
+        case inkforgedui::NavTab::Moves:
+          ui.view = View::Moves;
+          break;
+        case inkforgedui::NavTab::AssetCards:
+          ui.view = View::AssetCards;
+          break;
+      }
       requestUpdate();
       break;
     default:
