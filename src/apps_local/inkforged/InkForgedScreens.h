@@ -1,6 +1,7 @@
 #pragma once
 
-// The INKFORGED screen: chrome, the name, and a body with nothing in it yet.
+// The INKFORGED screens: chrome, the navigation row, and whatever the open view
+// draws between them.
 //
 // Freestanding in the PlayerScreen mould -- a screen in, a drawn frame out, no
 // renderer and no Activity -- so host-tests/ui/ can assert what it drew and
@@ -31,11 +32,23 @@ enum class NavTab : int16_t {
   AssetCards,
 };
 
+// One asset: what it is called, what it is grouped under, and the notes that
+// explain it. Pointers rather than owned strings, so a card can be drawn
+// straight out of whatever buffer the caller loaded it into and this header
+// stays freestanding.
+constexpr uint8_t kAssetNotes = 3;
+
+struct AssetCard {
+  const char* name = "";
+  const char* type = "";
+  const char* notes[kAssetNotes] = {"", "", ""};
+};
+
 // One builder per view. Each knows which view it is, so it can mark its own
 // navigation cell as the selected one.
 void buildHome(toybox::Screen& screen);
 void buildMoves(toybox::Screen& screen);
-void buildAssetCards(toybox::Screen& screen);
+void buildAssetCards(toybox::Screen& screen, const AssetCard& card);
 
 // The art each navigation cell carries. Public because ToyboxIcons.h declares
 // every icon `static const`, so each translation unit holds its own copy at its
