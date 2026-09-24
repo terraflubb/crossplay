@@ -10,21 +10,8 @@ constexpr int16_t kNavHeight = 56;
 // Three views and room for three more. Empty slots keep the icons that exist
 // from shifting sideways when a view is added.
 constexpr uint8_t kNavSlots = 6;
+// The views that exist. The slots past these are the placeholders.
 constexpr uint8_t kNavViews = 3;
-
-// Placeholder art: InkForged has no icons of its own yet, so these borrow shelf
-// glyphs whose shape reads close enough -- a grid, a walking figure, a stack.
-fui::BitmapRef navIcon(const NavTab tab) {
-  switch (tab) {
-    case NavTab::Home:
-      return fui::bitmapFromIcon(icon_apps_32);
-    case NavTab::Moves:
-      return fui::bitmapFromIcon(icon_cat_act_32);
-    case NavTab::AssetCards:
-      return fui::bitmapFromIcon(icon_xkcd_32);
-  }
-  return {};
-}
 
 // The navigation row, and the only chrome along the bottom. Called first in
 // every builder so nothing above can grow into it.
@@ -42,7 +29,7 @@ void navBar(toybox::Screen& screen, const NavTab active) {
   fui::TabItem tabs[kNavSlots];
   for (uint8_t i = 0; i < kNavSlots; ++i) tabs[i].enabled = false;
   for (uint8_t i = 0; i < kNavViews; ++i) {
-    tabs[i].icon = navIcon(kViews[i]);
+    tabs[i].icon = fui::bitmapFromIcon(navIcon(kViews[i]));
     tabs[i].value = static_cast<int16_t>(kViews[i]);
     tabs[i].selected = kViews[i] == active;
     tabs[i].enabled = true;
@@ -72,6 +59,20 @@ void toyboxChrome(toybox::Screen& screen, const char* title) {
 }
 
 }  // namespace
+
+// Placeholder art: InkForged has no icons of its own yet, so these borrow shelf
+// glyphs whose shape reads close enough -- a grid, a walking figure, a stack.
+const freeink::Icon& navIcon(const NavTab tab) {
+  switch (tab) {
+    case NavTab::Moves:
+      return icon_cat_act_32;
+    case NavTab::AssetCards:
+      return icon_xkcd_32;
+    case NavTab::Home:
+      break;
+  }
+  return icon_apps_32;
+}
 
 void buildHome(toybox::Screen& screen) {
   toyboxChrome(screen, "INKFORGED");

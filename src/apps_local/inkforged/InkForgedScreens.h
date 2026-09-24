@@ -37,4 +37,10 @@ void buildHome(toybox::Screen& screen);
 void buildMoves(toybox::Screen& screen);
 void buildAssetCards(toybox::Screen& screen);
 
+// The art each navigation cell carries. Public because ToyboxIcons.h declares
+// every icon `static const`, so each translation unit holds its own copy at its
+// own address: a caller that picked the icon itself would be naming a different
+// object than the one drawn here. host-tests/ui asks through this.
+const freeink::Icon& navIcon(NavTab tab);
+
 }  // namespace inkforgedui
