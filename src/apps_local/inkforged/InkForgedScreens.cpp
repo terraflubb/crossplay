@@ -1,7 +1,7 @@
 #include "InkForgedScreens.h"
 
 #include "../ui/ToyboxIcons.h"
-#include "../ui/ToyboxTokens.h"
+#include "../ui/ToyboxTokens.h" // IWYU pragma: export
 
 namespace inkforgedui {
 namespace {

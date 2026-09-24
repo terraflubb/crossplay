@@ -6,7 +6,7 @@
 // Freestanding like every screen here: a screen and a model in, a drawn frame
 // out, no renderer and no Activity.
 
-#include "InkForgedScreens.h"
+#include "InkForgedScreens.h" // IWYU pragma: export
 
 namespace inkforgedui {
 
