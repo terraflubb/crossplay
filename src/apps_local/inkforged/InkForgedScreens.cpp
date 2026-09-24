@@ -67,13 +67,57 @@ void toyboxChrome(toybox::Screen& screen, const char* title) {
   screen.insetContent(fui::Insets{kChromeGap, toybox::kMargin, toybox::kMargin, toybox::kMargin});
 }
 
+// sqrt(3)/2 and its reciprocal, per thousand. A pointy-top hexagon is 2r tall
+// and r*sqrt(3) wide, and a uniform stroke of w on the flats means insetting
+// the circumradius by w * 2/sqrt(3), because the flats sit at r*sqrt(3)/2.
+constexpr int32_t kHalfRoot3 = 866;
+constexpr int32_t kInsetPerWeight = 1155;
+
+// A regular pointy-top hexagon, by rows.
+//
+// Rows rather than a fan of triangles, although DrawTarget exposes triangle()
+// and a hexagon is four of them: fillPolygon interpolates every edge from its
+// own endpoints with truncating integer division, so the two triangles either
+// side of a shared edge can land a pixel apart and leave a seam down the
+// middle. A row is one fill and cannot disagree with itself. toybox::disc is
+// drawn this way for the same reason, and its comment records what the
+// hand-rolled alternative looked like.
+void hexagonRows(toybox::Screen& screen, const int16_t cx, const int16_t cy, const int16_t r,
+                 const fui::Paint& paint) {
+  if (r <= 0) return;
+  for (int16_t dy = static_cast<int16_t>(-r); dy <= r; ++dy) {
+    const int32_t away = dy < 0 ? -dy : dy;
+    // Full width down the middle third, then a straight taper to each point.
+    const int32_t flat = r * kHalfRoot3 / 1000;
+    const int32_t taper = (r - away) * kHalfRoot3 * 2 / 1000;
+    const int32_t half = taper < flat ? taper : flat;
+    if (half <= 0) continue;
+    screen.target().fill(fui::makeRect(static_cast<int16_t>(cx - half), static_cast<int16_t>(cy + dy),
+                                       static_cast<int16_t>(half * 2), 1),
+                         paint);
+  }
+}
+
+// Filled, or hollow with `weight` of ink on the flats. Hollow is the ring()
+// idiom -- ink, then a smaller one in paper on top -- which closes by
+// construction rather than by six line() calls meeting at the corners.
+void hexagon(toybox::Screen& screen, const int16_t cx, const int16_t cy, const int16_t r, const bool filled,
+             const int16_t weight) {
+  hexagonRows(screen, cx, cy, r, fui::Paint::solid(fui::Color::Black));
+  if (filled) return;
+  hexagonRows(screen, cx, cy, static_cast<int16_t>(r - weight * kInsetPerWeight / 1000),
+              fui::Paint::solid(fui::Color::White));
+}
+
 // The card's own geometry: the air inside its frame, how far a note's text sits
-// clear of its dot, and the slab around the type chip's cut.
+// clear of its marker, and the slab around the type chip's cut.
 constexpr int16_t kCardRadius = 10;
 constexpr int16_t kCardPad = 12;
 constexpr int16_t kNoteIndent = 22;
 constexpr int16_t kNoteGap = 10;
-constexpr int16_t kDotRadius = 5;
+// The bullet: centre to point, and the stroke left on the flats when hollow.
+constexpr int16_t kBulletRadius = 8;
+constexpr int16_t kBulletWeight = 2;
 constexpr int16_t kChipPadX = 8;
 constexpr int16_t kChipPadY = 3;
 
@@ -164,10 +208,10 @@ void assetCardFace(toybox::Screen& screen, const fui::Rect& box, const AssetCard
   const int16_t noteLine = target.lineHeight(note.font);
   for (uint8_t i = 0; i < kAssetNotes; ++i) {
     const int16_t height = fui::measureWrappedText(target, card.notes[i], note, noteWidth).height;
-    // Centred on the note's FIRST line, not on the block: a dot floating halfway
-    // down five lines reads as belonging to the line beside it.
-    toybox::disc(screen, static_cast<int16_t>(x + kNoteIndent / 2), static_cast<int16_t>(y + noteLine / 2), kDotRadius,
-                 fui::Color::Black);
+    // Centred on the note's FIRST line, not on the block: a marker floating
+    // halfway down five lines reads as belonging to the line beside it.
+    hexagon(screen, static_cast<int16_t>(x + kNoteIndent / 2), static_cast<int16_t>(y + noteLine / 2), kBulletRadius,
+            (i == 0), kBulletWeight);
     target.text(fui::makeRect(noteX, y, noteWidth, height), card.notes[i], note);
     y = static_cast<int16_t>(y + height + kNoteGap);
   }
