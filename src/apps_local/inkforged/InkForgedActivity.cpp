@@ -7,6 +7,7 @@
 #include "../ui/ToyboxFonts.h"
 #include "../ui/ToyboxTheme.h"
 #include "InkForgedCards.h"
+#include "InkForgedScreenAssetCard.h"
 #include "InkForgedScreens.h"
 
 std::unique_ptr<Activity> InkForgedActivity::create(GfxRenderer& renderer, MappedInputManager& mappedInput) {

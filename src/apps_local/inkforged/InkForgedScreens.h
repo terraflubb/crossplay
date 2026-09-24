@@ -32,23 +32,17 @@ enum class NavTab : int16_t {
   AssetCards,
 };
 
-// One asset: what it is called, what it is grouped under, and the notes that
-// explain it. Pointers rather than owned strings, so a card can be drawn
-// straight out of whatever buffer the caller loaded it into and this header
-// stays freestanding.
-constexpr uint8_t kAssetNotes = 3;
+// The chrome every view wears, called first in each builder so nothing below
+// can grow into it. Shared rather than private because each view lives in its
+// own translation unit and they must agree on where the body starts.
+void toyboxChrome(toybox::Screen& screen, const char* title);
+void navBar(toybox::Screen& screen, NavTab active);
 
-struct AssetCard {
-  const char* name = "";
-  const char* type = "";
-  const char* notes[kAssetNotes] = {"", "", ""};
-};
-
-// One builder per view. Each knows which view it is, so it can mark its own
-// navigation cell as the selected one.
+// One builder per view, each in its own file once it outgrows a few lines.
+// Each knows which view it is, so it can mark its own navigation cell as the
+// selected one.
 void buildHome(toybox::Screen& screen);
 void buildMoves(toybox::Screen& screen);
-void buildAssetCards(toybox::Screen& screen, const AssetCard& card);
 
 // The art each navigation cell carries. Public because ToyboxIcons.h declares
 // every icon `static const`, so each translation unit holds its own copy at its
