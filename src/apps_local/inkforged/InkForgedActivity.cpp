@@ -6,27 +6,8 @@
 #include "../ui/Toybox.h" // IWYU pragma: export
 #include "../ui/ToyboxFonts.h"
 #include "../ui/ToyboxTheme.h"
+#include "InkForgedCards.h"
 #include "InkForgedScreens.h"
-
-namespace {
-
-// Stand-in copy until cards are read off the SD card. Notes of the length a
-// real one runs to, because a layout judged against a short line is a layout
-// nobody will ever see.
-constexpr inkforgedui::AssetCard kSampleCard{
-    "Starship",
-    "Command Vehicle",
-    {
-     "Your armed, multipurpose starship is suited for interstellar and atmospheric flight. It can comfortably "
-     "transport several people, has space for cargo, and can carry and launch support vehicles. When you "
-     "Advance, you may spend experience to equip this vehicle with module assets.",
-     "When you Finish an Expedition (dangerous or greater) in your starship and score a hit, this journey "
-     "strengthened your ties to your ship and any fellow travelers. You and your allies may mark 1 tick on "
-     "your bonds legacy track.",
-     "When you Withstand Damage, you may roll +heart. If you do, Endure Stress (-1) on a weak hit or miss."
-     }
-  };
-}  // namespace
 
 std::unique_ptr<Activity> InkForgedActivity::create(GfxRenderer& renderer, MappedInputManager& mappedInput) {
   return makeUniqueNoThrow<InkForgedActivity>(renderer, mappedInput);
@@ -99,7 +80,7 @@ void InkForgedActivity::render(RenderLock&&) {
       inkforgedui::buildMoves(screen);
       break;
     case View::AssetCards:
-      inkforgedui::buildAssetCards(screen, kSampleCard);
+      inkforgedui::buildAssetCards(screen, inkforgedui::kCards[0]);
       break;
   }
 
