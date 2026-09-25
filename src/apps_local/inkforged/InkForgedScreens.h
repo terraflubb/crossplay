@@ -38,6 +38,8 @@ enum class NavTab : int16_t {
 void toyboxChrome(toybox::Screen& screen, const char* title);
 void navBar(toybox::Screen& screen, NavTab active);
 
+// Someday this might allow for underlining text, it's for rendering
+// text which was pre-processed a bit. Except we aren't doing that now.
 int16_t modestTextBlock(fui::DrawTarget&, int16_t x, int16_t y, int16_t width, const char* text, const fui::TextStyle& style);
 
 // One builder per view, each in its own file once it outgrows a few lines.

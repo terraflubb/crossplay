@@ -36,6 +36,9 @@ class InkForgedActivity final : public Activity {
   // Where the app is. Nothing saved, nothing about what the app holds.
   struct UiState {
     View view = View::Home;
+    // Index into inkforgedui::kCards. Signed because paging arithmetic goes
+    // negative before it is wrapped or clamped.
+    int16_t currentAssetCard = 0;
   };
 
   UiState ui;

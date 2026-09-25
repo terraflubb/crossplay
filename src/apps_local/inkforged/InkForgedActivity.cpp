@@ -31,6 +31,25 @@ void InkForgedActivity::loop() {
     return;
   }
 
+  // Paging the deck. The two side keys are the only buttons this device has,
+  // and the case moulds them as previous/next page, which is what this is.
+  // Read above the tap early-return below, or a key press on a frame with no
+  // tap would be dropped.
+  if (ui.view == View::AssetCards && inkforgedui::kCardCount > 0) {
+    const bool previous = mappedInput.wasReleased(MappedInputManager::Button::PageBack);
+    const bool next = mappedInput.wasReleased(MappedInputManager::Button::PageForward);
+    if (previous || next) {
+      const int16_t last = static_cast<int16_t>(inkforgedui::kCardCount - 1);
+      if (next) {
+        ui.currentAssetCard = ui.currentAssetCard >= last ? 0 : static_cast<int16_t>(ui.currentAssetCard + 1);
+      } else {
+        ui.currentAssetCard = ui.currentAssetCard <= 0 ? last : static_cast<int16_t>(ui.currentAssetCard - 1);
+      }
+      requestUpdate();
+      return;
+    }
+  }
+
   fui::InputSnapshot input;
   int tapX = 0;
   int tapY = 0;
@@ -81,7 +100,7 @@ void InkForgedActivity::render(RenderLock&&) {
       inkforgedui::buildMoves(screen);
       break;
     case View::AssetCards:
-      inkforgedui::buildAssetCards(screen, inkforgedui::kCards[0]);
+      inkforgedui::buildAssetCards(screen, inkforgedui::kCards[ui.currentAssetCard]);
       break;
   }
 
