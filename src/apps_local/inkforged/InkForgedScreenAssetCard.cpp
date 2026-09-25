@@ -15,13 +15,9 @@ constexpr int32_t kInsetPerWeight = 1155;
 
 // A regular pointy-top hexagon, by rows.
 //
-// Rows rather than a fan of triangles, although DrawTarget exposes triangle()
-// and a hexagon is four of them: fillPolygon interpolates every edge from its
-// own endpoints with truncating integer division, so the two triangles either
-// side of a shared edge can land a pixel apart and leave a seam down the
-// middle. A row is one fill and cannot disagree with itself. toybox::disc is
-// drawn this way for the same reason, and its comment records what the
-// hand-rolled alternative looked like.
+// Drawn as a series of rows rather than a fan of triangles,
+// The robot thought that using polygon would introduce integer rounding
+// errors creating gaps.
 void hexagonRows(toybox::Screen& screen, const int16_t cx, const int16_t cy, const int16_t r,
                  const fui::Paint& paint) {
   if (r <= 0) return;
@@ -59,10 +55,8 @@ constexpr int16_t kBulletWeight = 2;
 constexpr int16_t kTypePadX = 8;
 constexpr int16_t kTypePadY = 3;
 
-// Three cuts, three jobs. Under readingFaces() the title slot is the display
-// cut, the body slot is the reading serif and the small slot is the dense
-// Jersey one: a name read from arm's length, notes read as prose, and a
-// classification that is a label rather than either.
+// Style for titles, robot suggest this be in a function
+// I'm not sure why.
 fui::TextStyle titleTextStyle() {
   fui::TextStyle style;
   style.font = toybox::kDisplayFont;
@@ -70,8 +64,8 @@ fui::TextStyle titleTextStyle() {
   return style;
 }
 
-// White because it is knocked out of the label's solid: GfxRendererTarget::text
-// decides ink with `color != White`, so this is the one colour that draws paper.
+// Text for the little labels, it's white because it goes
+// on a dark rectangle
 fui::TextStyle typeLabelStyle() {
   fui::TextStyle style;
   style.font = toybox::kSmallFont;
@@ -80,13 +74,14 @@ fui::TextStyle typeLabelStyle() {
   return style;
 }
 
-// Twelve lines rather than three. maxLines is where layoutText starts
-// ellipsizing, and nothing here is ever elided (docs/design-language.md), so
-// this is headroom past the longest note the body width can hold -- not a
-// budget. The height a note actually gets is measured, never this.
+
+// The text for the ability card. It's small.
 fui::TextStyle assetCardAbilityTextStyle() {
   fui::TextStyle style;
   style.font = toybox::kSmallFont;
+  // Each bulleted item can be at max 12 lines, if I don't set this
+  // it's wrapped to 1 line. Usually the whole card is 12, so 36 is
+  // a lot.
   style.maxLines = 12;
   return style;
 }
@@ -113,10 +108,6 @@ int16_t assetCardHeight(toybox::Screen& screen, const int16_t width, const Asset
 }
 
 // The card itself, drawn into whatever box it is handed.
-//
-// An outline and one small solid, rather than a filled ground: the card is the
-// part of the screen that changes when the asset changes, and the black you can
-// afford is inversely proportional to how often it changes.
 void assetCardFace(toybox::Screen& screen, const fui::Rect& box, const AssetCard& card) {
   fui::DrawTarget& target = screen.target();
 
@@ -179,8 +170,7 @@ void buildAssetCards(toybox::Screen& screen, const AssetCard& card) {
   navBar(screen, NavTab::AssetCards);
 
   // takeTop clamps to what is left, so a card longer than the body is cut off
-  // at the navigation row rather than drawn over it. One card is the whole view
-  // for now; a deck of them is what needs scrolling.
+  // at the navigation row rather than drawn over it.
   assetCardFace(screen, screen.takeTop(assetCardHeight(screen, screen.body().width, card)), card);
 }
 
