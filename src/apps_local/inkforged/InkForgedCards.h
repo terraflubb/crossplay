@@ -15,20 +15,20 @@ inline constexpr AssetCard kCards[] = {
   "Starship",
   "Command Vehicle",
   {
-     "Your armed, multipurpose starship is suited for\n"
-     "interstellar and atmospheric flight. It can\n"
-     "comfortably transport several people, has space\n"
-     "for cargo, and can carry and launch support\n"
-     "vehicles. When you Advance, you may spend\n"
-     "experience to equip this vehicle with module\n"
+     "Your armed, multipurpose starship is suited for "
+     "interstellar and atmospheric flight. It can "
+     "comfortably transport several people, has space "
+     "for cargo, and can carry and launch support "
+     "vehicles. When you Advance, you may spend "
+     "experience to equip this vehicle with module "
      "assets.",
-     "When you Finish an Expedition (dangerous or\n"
-     "greater) in your starship and score a hit, this\n"
-     "journey strengthened your ties to your ship and\n"
-     "any fellow travelers. You and your allies may\n"
+     "When you Finish an Expedition (dangerous or "
+     "greater) in your starship and score a hit, this "
+     "journey strengthened your ties to your ship and "
+     "any fellow travelers. You and your allies may "
      "mark 1 tick on your bonds legacy track.",
-     "When you Withstand Damage, you may roll\n"
-     "+heart. If you do, Endure Stress (-1) on a weak\n"
+     "When you Withstand Damage, you may roll "
+     "+heart. If you do, Endure Stress (-1) on a weak "
      "hit or miss."
   }
 },
@@ -36,22 +36,20 @@ inline constexpr AssetCard kCards[] = {
   "Engine Upgrade",
   "Module",
   {
-     "Your vehicle's finely-tuned engines speed your\n"
-     "travels. When you Undertake an Expedition\n"
-     "(+edge) and score a strong hit, take +1\n"
-     "momentum; on a strong hit with a 6 on your action\n"
+     "Your vehicle's finely-tuned engines speed your "
+     "travels. When you Undertake an Expedition "
+     "(+edge) and score a strong hit, take +1 "
+     "momentum; on a strong hit with a 6 on your action "
      "die, take +2 momentum instead of +1.",
-     "When you Enter the Fray, choose one (before\n"
+     "When you Enter the Fray, choose one (before "
      "rolling).\n"
-     "\n"
      "   * Maneuver: Add +1 and take +1 momentum on a\n"
      "     strong hit.\n"
-     "\n"
-     "   * Boost: Take +2 momentum on a hit.",
-     "When you make a desperate move to pursue a foe,\n"
-     "escape a threat, or get in range, you may push\n"
-     "your engines to their limit. If you do (decide after\n"
-     "rolling), reroll any dice and count a weak hit as a\n"
+     "   * Boost: Take +2 momentum on a hit.\n",
+     "When you make a desperate move to pursue a foe, "
+     "escape a threat, or get in range, you may push "
+     "your engines to their limit. If you do (decide after "
+     "rolling), reroll any dice and count a weak hit as a "
      "strong hit. Then, Withstand Damage (-2)."
   }
 },

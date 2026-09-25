@@ -38,7 +38,7 @@ class InkForgedActivity final : public Activity {
     View view = View::Home;
     // Index into inkforgedui::kCards. Signed because paging arithmetic goes
     // negative before it is wrapped or clamped.
-    int16_t currentAssetCard = 0;
+    int16_t currentAssetCard = 1; // Start on a tricky one
   };
 
   UiState ui;
