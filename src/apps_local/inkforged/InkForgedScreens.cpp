@@ -69,6 +69,15 @@ void toyboxChrome(toybox::Screen& screen, const char* title) {
   screen.insetContent(fui::Insets{kChromeGap, toybox::kMargin, toybox::kMargin, toybox::kMargin});
 }
 
+int16_t modestTextBlock(fui::DrawTarget& target, const int16_t x, const int16_t y,
+                        const int16_t width,
+                        const char* content, const fui::TextStyle& style) {
+  const int16_t height = fui::measureWrappedText(target, content, style, width).height;
+  target.text(fui::makeRect(x, y, width, height), content, style);
+
+  return height;
+}
+
 // Placeholder art: InkForged has no icons of its own yet, so these borrow shelf
 // glyphs whose shape reads close enough -- a grid, a walking figure, a stack.
 const freeink::Icon& navIcon(const NavTab tab) {

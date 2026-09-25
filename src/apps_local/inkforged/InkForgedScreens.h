@@ -38,6 +38,8 @@ enum class NavTab : int16_t {
 void toyboxChrome(toybox::Screen& screen, const char* title);
 void navBar(toybox::Screen& screen, NavTab active);
 
+int16_t modestTextBlock(fui::DrawTarget&, int16_t x, int16_t y, int16_t width, const char* text, const fui::TextStyle& style);
+
 // One builder per view, each in its own file once it outgrows a few lines.
 // Each knows which view it is, so it can mark its own navigation cell as the
 // selected one.

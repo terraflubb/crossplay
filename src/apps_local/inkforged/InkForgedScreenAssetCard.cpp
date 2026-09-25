@@ -1,6 +1,8 @@
 #include "InkForgedScreenAssetCard.h"
+#include <cstdint>
 
 #include "../ui/ToyboxTokens.h"
+#include "apps_local/inkforged/InkForgedScreens.h"
 
 namespace inkforgedui {
 namespace {
@@ -155,19 +157,18 @@ void assetCardFace(toybox::Screen& screen, const fui::Rect& box, const AssetCard
   const int16_t noteX = static_cast<int16_t>(cardOriginX + kNoteIndent);
   const int16_t noteWidth = static_cast<int16_t>(innerWidth - kNoteIndent);
   const int16_t noteLineHeight = target.lineHeight(noteStyle.font);
-  
+
   for (uint8_t i = 0; i < kAssetNotes; ++i) {
-    const int16_t height = fui::measureWrappedText(target, card.notes[i], noteStyle, noteWidth).height;
-    // Centred on the note's FIRST line, not on the block: a marker floating
-    // halfway down five lines reads as belonging to the line beside it.
-    hexagon(screen, 
+    // Start each note with a hexagon which might be full or empty
+    hexagon(screen,
             static_cast<int16_t>(cardOriginX + kNoteIndent / 2),
             static_cast<int16_t>(currentY + noteLineHeight / 2),
             kBulletRadius,
             (i == 0),       // Hack for now, by default only the first one is solid.
             kBulletWeight);
-    target.text(fui::makeRect(noteX, currentY, noteWidth, height), card.notes[i], noteStyle);
-    currentY = static_cast<int16_t>(currentY + height + kNoteGap);
+
+    const int16_t blockHeight =  modestTextBlock(target, noteX, currentY, noteWidth, card.notes[i], noteStyle);
+    currentY = static_cast<int16_t>(currentY + blockHeight + kNoteGap);
   }
 }
 
