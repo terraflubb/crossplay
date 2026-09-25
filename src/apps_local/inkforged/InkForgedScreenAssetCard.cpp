@@ -30,9 +30,7 @@ void hexagonRows(toybox::Screen& screen, const int16_t cx, const int16_t cy, con
     const int32_t taper = (r - away) * kHalfRoot3 * 2 / 1000;
     const int32_t half = taper < flat ? taper : flat;
     if (half <= 0) continue;
-    screen.target().fill(fui::makeRect(static_cast<int16_t>(cx - half), static_cast<int16_t>(cy + dy),
-                                       static_cast<int16_t>(half * 2), 1),
-                         paint);
+    screen.target().fill(fui::makeRect(cx - half, cy + dy, half * 2, 1), paint);
   }
 }
 
@@ -56,23 +54,23 @@ constexpr int16_t kNoteGap = 10;
 // The bullet: centre to point, and the stroke left on the flats when hollow.
 constexpr int16_t kBulletRadius = 8;
 constexpr int16_t kBulletWeight = 2;
-constexpr int16_t kChipPadX = 8;
-constexpr int16_t kChipPadY = 3;
+constexpr int16_t kTypePadX = 8;
+constexpr int16_t kTypePadY = 3;
 
 // Three cuts, three jobs. Under readingFaces() the title slot is the display
 // cut, the body slot is the reading serif and the small slot is the dense
 // Jersey one: a name read from arm's length, notes read as prose, and a
 // classification that is a label rather than either.
-fui::TextStyle nameStyle() {
+fui::TextStyle titleTextStyle() {
   fui::TextStyle style;
   style.font = toybox::kDisplayFont;
   style.maxLines = 2;
   return style;
 }
 
-// White because it is knocked out of the chip's solid: GfxRendererTarget::text
+// White because it is knocked out of the label's solid: GfxRendererTarget::text
 // decides ink with `color != White`, so this is the one colour that draws paper.
-fui::TextStyle typeStyle() {
+fui::TextStyle typeLabelStyle() {
   fui::TextStyle style;
   style.font = toybox::kSmallFont;
   style.color = fui::Color::White;
@@ -100,8 +98,8 @@ int16_t assetCardHeight(toybox::Screen& screen, const int16_t width, const Asset
   const int16_t noteWidth = static_cast<int16_t>(inner - kNoteIndent);
 
   int16_t height = static_cast<int16_t>(2 * kCardPad);
-  height = static_cast<int16_t>(height + fui::measureWrappedText(target, card.name, nameStyle(), inner).height);
-  height = static_cast<int16_t>(height + toybox::spaceBetween + target.lineHeight(typeStyle().font) + 2 * kChipPadY);
+  height = static_cast<int16_t>(height + fui::measureWrappedText(target, card.name, titleTextStyle(), inner).height);
+  height = static_cast<int16_t>(height + toybox::spaceBetween + target.lineHeight(typeLabelStyle().font) + 2 * kTypePadY);
   height = static_cast<int16_t>(height + toybox::kGutter + toybox::kHairline + toybox::kGutter);
   for (uint8_t i = 0; i < kAssetNotes; ++i) {
     if (i > 0) height = static_cast<int16_t>(height + kNoteGap);
@@ -119,41 +117,57 @@ int16_t assetCardHeight(toybox::Screen& screen, const int16_t width, const Asset
 // afford is inversely proportional to how often it changes.
 void assetCardFace(toybox::Screen& screen, const fui::Rect& box, const AssetCard& card) {
   fui::DrawTarget& target = screen.target();
-  const fui::Paint ink = fui::Paint::solid(fui::Color::Black);
-  target.stroke(box, ink, toybox::kRule, kCardRadius);
 
-  const int16_t x = static_cast<int16_t>(box.x + kCardPad);
-  const int16_t inner = static_cast<int16_t>(box.width - 2 * kCardPad);
-  int16_t y = static_cast<int16_t>(box.y + kCardPad);
+  const fui::Paint blackPaint = fui::Paint::solid(fui::Color::Black);
+  target.stroke(box, blackPaint, toybox::kRule, kCardRadius);
 
-  const fui::TextStyle name = nameStyle();
-  const int16_t nameHeight = fui::measureWrappedText(target, card.name, name, inner).height;
-  target.text(fui::makeRect(x, y, inner, nameHeight), card.name, name);
-  y = static_cast<int16_t>(y + nameHeight + toybox::spaceBetween);
+  // The never-changing X coordinate of the card
+  const int16_t cardOriginX = static_cast<int16_t>(box.x + kCardPad);
+  const int16_t cardOriginY = static_cast<int16_t>(box.y + kCardPad);
 
-  const fui::TextStyle type = typeStyle();
-  const int16_t chipHeight = static_cast<int16_t>(target.lineHeight(type.font) + 2 * kChipPadY);
-  const int16_t chipWidth = static_cast<int16_t>(target.measureText(type.font, card.type, type).width + 2 * kChipPadX);
-  const fui::Rect chip = fui::makeRect(x, y, chipWidth, chipHeight);
-  target.fill(chip, ink, static_cast<uint8_t>(chipHeight / 2));
-  target.text(chip, card.type, type);
-  y = static_cast<int16_t>(y + chipHeight + toybox::kGutter);
+  // The width of the interior of the card
+  const int16_t innerWidth = static_cast<int16_t>(box.width - 2 * kCardPad);
 
-  target.fill(fui::makeRect(x, y, inner, toybox::kHairline), ink);
-  y = static_cast<int16_t>(y + toybox::kHairline + toybox::kGutter);
+  // A sliding Y position we nudge as we move down
+  int16_t currentY = cardOriginY;
 
-  const fui::TextStyle note = assetCardAbilityTextStyle();
-  const int16_t noteX = static_cast<int16_t>(x + kNoteIndent);
-  const int16_t noteWidth = static_cast<int16_t>(inner - kNoteIndent);
-  const int16_t noteLine = target.lineHeight(note.font);
+  // Draw the title (name of the card)
+  const fui::TextStyle titleStyle = titleTextStyle();
+  const int16_t titleHeight = fui::measureWrappedText(target, card.name, titleStyle, innerWidth).height;
+  target.text(fui::makeRect(cardOriginX, currentY, innerWidth, titleHeight), card.name, titleStyle);
+  currentY = static_cast<int16_t>(currentY + titleHeight + toybox::spaceBetween);
+
+  // Draw the little type label, white text on a black rounded rectangle
+  const fui::TextStyle typeStyle = typeLabelStyle();
+  const int16_t typeLabelHeight = static_cast<int16_t>(target.lineHeight(typeStyle.font) + 2 * kTypePadY);
+  const int16_t typeLabelWidth = static_cast<int16_t>(target.measureText(typeStyle.font, card.type, typeStyle).width + 2 * kTypePadX);
+  const fui::Rect typeLabelRect = fui::makeRect(cardOriginX, currentY, typeLabelWidth, typeLabelHeight);
+  target.fill(typeLabelRect, blackPaint, static_cast<uint8_t>(typeLabelHeight / 2));
+  target.text(typeLabelRect, card.type, typeStyle);
+  currentY = static_cast<int16_t>(currentY + typeLabelHeight + toybox::kGutter);
+
+  // Little line
+  target.fill(fui::makeRect(cardOriginX, currentY, innerWidth, toybox::kHairline), blackPaint);
+  currentY = static_cast<int16_t>(currentY + toybox::kHairline + toybox::kGutter);
+
+  // Now for the text.
+  const fui::TextStyle noteStyle = assetCardAbilityTextStyle();
+  const int16_t noteX = static_cast<int16_t>(cardOriginX + kNoteIndent);
+  const int16_t noteWidth = static_cast<int16_t>(innerWidth - kNoteIndent);
+  const int16_t noteLineHeight = target.lineHeight(noteStyle.font);
+  
   for (uint8_t i = 0; i < kAssetNotes; ++i) {
-    const int16_t height = fui::measureWrappedText(target, card.notes[i], note, noteWidth).height;
+    const int16_t height = fui::measureWrappedText(target, card.notes[i], noteStyle, noteWidth).height;
     // Centred on the note's FIRST line, not on the block: a marker floating
     // halfway down five lines reads as belonging to the line beside it.
-    hexagon(screen, static_cast<int16_t>(x + kNoteIndent / 2), static_cast<int16_t>(y + noteLine / 2), kBulletRadius,
-            (i == 0), kBulletWeight);
-    target.text(fui::makeRect(noteX, y, noteWidth, height), card.notes[i], note);
-    y = static_cast<int16_t>(y + height + kNoteGap);
+    hexagon(screen, 
+            static_cast<int16_t>(cardOriginX + kNoteIndent / 2),
+            static_cast<int16_t>(currentY + noteLineHeight / 2),
+            kBulletRadius,
+            (i == 0),       // Hack for now, by default only the first one is solid.
+            kBulletWeight);
+    target.text(fui::makeRect(noteX, currentY, noteWidth, height), card.notes[i], noteStyle);
+    currentY = static_cast<int16_t>(currentY + height + kNoteGap);
   }
 }
 

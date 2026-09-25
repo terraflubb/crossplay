@@ -16,8 +16,8 @@ inline constexpr AssetCard kCards[] = {
         "Command Vehicle",
         {
             "Your armed, multipurpose starship is suited for interstellar and atmospheric "
-            "flight. It can comfortably transport several people, has space for cargo, and "
-            "can carry and launch support vehicles. When you Advance, you may spend "
+            "flight.\nIt can comfortably transport several people, has space for cargo, and "
+            "can carry and launch support vehicles. When you \nAdvance, you may spend "
             "experience to equip this vehicle with module assets.",
             "When you Finish an Expedition (dangerous or greater) in your starship and score "
             "a hit, this journey strengthened your ties to your ship and any fellow "
