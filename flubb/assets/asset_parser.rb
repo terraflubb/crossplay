@@ -59,8 +59,12 @@ def wrap_text(text, width = 80)
   text.strip.scan(/\S.{0,#{width - 2}}(?:\s+|\z)|\S+/)
 end
 
-def cpp_literal(text, width: 80, indent: 5)
-  wrap_text(cpp_string(text), width).map { |chunk| "#{' ' * indent}\"#{chunk}\"" }.join("\n")
+def cpp_literal(text, width: 50, indent: 5)
+  wrapped_text = wrap_text(cpp_string(text), width)
+  wrapped_text
+    .map.with_index { |chunk, i| chunk.strip + ( (i < wrapped_text.size - 1) ? "\\n" : "") }
+    .map { |chunk| "#{' ' * indent}\"#{chunk}\"" }
+    .join("\n")
 end
 
 def render_asset(final_asset)
@@ -97,10 +101,10 @@ assets.each do |asset_type|
     end
     asset_count = asset_count + 1
     # We're debugging this one.
-    if asset_count == 2
-      puts render_asset(final_asset)
-    exit 0
-    end
+    puts render_asset(final_asset)
+    # if asset_count == 1
+    #   exit 0
+    # end
 
   end
 
