@@ -95,9 +95,13 @@ assets.each do |asset_type|
       content = strip_markdown_links(ability["Text"])
       final_asset[:abilities] << content
     end
-    puts render_asset(final_asset)
     asset_count = asset_count + 1
-    exit 0 if asset_count == 2
+    # We're debugging this one.
+    if asset_count == 2
+      puts render_asset(final_asset)
+    exit 0
+    end
+
   end
 
 end
