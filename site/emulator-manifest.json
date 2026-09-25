@@ -1,14 +1,14 @@
 {
   "_comment": "Written by tools_local/site/publish_emulator.py; read by site/fetch-emulator.mjs during Vercel's build. The bytes live on the GitHub release below rather than in git. Do not hand-edit.",
-  "base": "https://github.com/ma-r-s/crossplay/releases/download/emulator/",
-  "built_from": "8d8722f1f3d2041959a4b3f28392de94c0dc3e1f",
+  "base": "https://github.com/terraflubb/crossplay/releases/download/emulator/",
+  "built_from": "d5ca8d7b3080bc11679d79683466894bf3366986",
   "files": [
     {
       "name": "BUILT_FROM",
-      "asset": "6abd1b4344e3e310-BUILT_FROM",
-      "sha256": "6abd1b4344e3e31065d6b7cb06d9fe3333570c278a46ba0d5fda76acc260abbb",
-      "sha256_raw": "90b9197a00ee9c40950792a643f3b101ddc22ee0b32a7507dd4f0925fdd25edf",
-      "bytes": 38,
+      "asset": "83751661f032a80d-BUILT_FROM",
+      "sha256": "83751661f032a80ddda5119e68437213a9b1ae8502233855347a7b754b0806a5",
+      "sha256_raw": "18e8ab282c72c898b8342d5aa8ac461c636c5eefb8288a36a92f01d06439fc80",
+      "bytes": 37,
       "bytes_raw": 41
     },
     {
@@ -21,19 +21,19 @@
     },
     {
       "name": "crossplay.js",
-      "asset": "d5924b37487af027-crossplay.js",
-      "sha256": "d5924b37487af0271a1d3a178e34e776d327037c97fd3ad028c3a418b6b62cbf",
-      "sha256_raw": "2c62dcd10ea0b7a2d2c02b800fbcd51654cb04606837558734a083a023729f42",
-      "bytes": 28837,
+      "asset": "a24ff4ead2074cff-crossplay.js",
+      "sha256": "a24ff4ead2074cff99ffe9e36f83254d38193b071039216dd0106b1b4b52882f",
+      "sha256_raw": "ec375fc53e22edf5ac89a53b95a16c19abf82907d167f46bccc6d83209f0bee4",
+      "bytes": 28833,
       "bytes_raw": 113573
     },
     {
       "name": "crossplay.wasm",
-      "asset": "dd3f7865a106be92-crossplay.wasm",
-      "sha256": "dd3f7865a106be92055aa514cf30ec1dd1302067c062f285c1bba73096d4283f",
-      "sha256_raw": "f317fded47f006a991d4bdebd50d30b66b9b750531eab2b9bfc960aea905d57c",
-      "bytes": 3113279,
-      "bytes_raw": 6016698
+      "asset": "28c851c1c6893a8b-crossplay.wasm",
+      "sha256": "28c851c1c6893a8b96c329f2fd432b5d858ed503dabd78fb123400aeba72aa3f",
+      "sha256_raw": "3a4e048d96ff2140c0d8836082611cc13bd9a739859bebdcd7a30df1e631133d",
+      "bytes": 3134475,
+      "bytes_raw": 6084640
     }
   ]
 }
