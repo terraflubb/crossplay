@@ -59,7 +59,7 @@ def wrap_text(text, width = 80)
   text.strip.scan(/\S.{0,#{width - 2}}(?:\s+|\z)|\S+/)
 end
 
-def cpp_literal(text, width: 50, indent: 5)
+def cpp_literal(text, width: 45, indent: 5)
   wrapped_text = wrap_text(cpp_string(text), width)
   wrapped_text
     .map.with_index { |chunk, i| chunk.strip + ( (i < wrapped_text.size - 1) ? "\\n" : "") }
