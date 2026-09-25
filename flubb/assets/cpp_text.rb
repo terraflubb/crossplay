@@ -1,6 +1,9 @@
 # Turning authored source text into C++ string literals. Shared by every
 # parser in this folder.
 
+# Pull in the data about the tiny font
+require_relative 'tiny_font.rb'
+
 MARKDOWN_LINK = /
   (?<image>!)?
   \[ (?<label>[^\[\]]*) \]
@@ -59,6 +62,101 @@ end
 # otherwise match nothing and silently drop the rest of the string.
 def wrap_text(text, width = 80)
   text.strip.scan(/\S.{0,#{width - 2}}(?:\s+|\z)|\S+/)
+end
+
+# The pixels a note has to wrap inside, derived from the card's own geometry:
+# body 480 - 2 * kMargin(16), less 2 * kCardPad(12), less kNoteIndent(22).
+SMALL_FONT_LINE_WIDTH_PX = 402
+
+def small_font_word_wrap(text, limit = SMALL_FONT_LINE_WIDTH_PX)
+  space = tiny_font_advance(' ')
+  final_lines = []
+  current_line = ''
+  current_length = 0
+
+  text.split(/\s+/).reject(&:empty?).each do |word|
+    word_length = tiny_font_width(word)
+    gap = current_line.empty? ? 0 : space
+
+    if !current_line.empty? && current_length + gap + word_length > limit
+      final_lines << current_line
+      current_line = ''
+      current_length = 0
+      gap = 0
+    end
+
+    # A word wider than the whole line still overflows when it is alone on one,
+    # so it is broken by character. Without this the line is emitted too long
+    # and the caller has no way to tell.
+    if word_length > limit
+      chunks = small_font_hard_break(word, limit)
+      final_lines.concat(chunks[0..-2])
+      current_line = chunks.last
+      current_length = tiny_font_width(chunks.last)
+      next
+    end
+
+    current_line += gap.zero? ? word : " #{word}"
+    current_length += gap + word_length
+  end
+
+  final_lines << current_line unless current_line.empty?
+  final_lines
+end
+
+# A bullet line in the source looks like "  * Maneuver: Add +1". The marker is
+# kept and re-indented; the hanging prefix aligns continuation lines under the
+# text rather than under the star.
+BULLET_PATTERN = /\A[*-]\s+/
+BULLET_PREFIX = '   * '
+BULLET_HANGING = '     '
+
+# Drops a leading blank and collapses runs, so a bullet's own leading blank and
+# one already in the source do not stack into a double gap.
+def squeeze_blank_lines(lines)
+  lines.each_with_object([]) do |line, kept|
+    next if line.empty? && (kept.empty? || kept.last.empty?)
+    kept << line
+  end
+end
+
+# Wraps text that has its own line structure: every bullet is preceded by a
+# blank line and keeps its marker, everything else is prose. Run this after
+# strip_markdown_links and fold_typography, or widths measure absent glyphs.
+def small_font_text_block(text, limit = SMALL_FONT_LINE_WIDTH_PX)
+  bullet_budget = limit - tiny_font_width(BULLET_PREFIX)
+
+  lines = text.split("\n").flat_map do |line|
+    line = line.strip
+    next [''] if line.empty?
+    next small_font_word_wrap(line, limit) unless line.match?(BULLET_PATTERN)
+
+    body = line.sub(BULLET_PATTERN, '')
+    wrapped = small_font_word_wrap(body, bullet_budget).map.with_index do |chunk, i|
+      (i.zero? ? BULLET_PREFIX : BULLET_HANGING) + chunk
+    end
+    [''] + wrapped
+  end
+
+  squeeze_blank_lines(lines)
+end
+
+def small_font_hard_break(word, limit = SMALL_FONT_LINE_WIDTH_PX)
+  chunks = []
+  chunk = ''
+  chunk_length = 0
+  word.chars.each do |letter|
+    letter_size = tiny_font_advance(letter)
+    if !chunk.empty? && chunk_length + letter_size > limit
+      chunks << chunk
+      chunk = ''
+      chunk_length = 0
+    end
+    chunk += letter
+    chunk_length += letter_size
+  end
+  chunks << chunk unless chunk.empty?
+  chunks
 end
 
 def cpp_literal(text, width: 45, indent: 5)
